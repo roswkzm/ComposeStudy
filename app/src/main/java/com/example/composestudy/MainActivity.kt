@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +20,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +44,7 @@ class MainActivity : ComponentActivity() {
 private fun MyApp(
     modifier: Modifier = Modifier,
 ) {
-    var shouldShowOnboarding by remember {
+    var shouldShowOnboarding by rememberSaveable {
         mutableStateOf(true)
     }
 
@@ -57,10 +60,10 @@ private fun MyApp(
 @Composable
 private fun Greetings(
     modifier: Modifier = Modifier,
-    names: List<String> = listOf("World", "Compose")
+    names: List<String> = List(1000) {"$it"}
 ) {
-    Column(modifier = modifier.padding(vertical = 4.dp)) {
-        for (name in names) {
+    LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
+        items(items = names) { name ->
             Greeting(name = name)
         }
     }
