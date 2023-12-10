@@ -7,6 +7,15 @@
 > @preview
 * 컴포즈 UI 미리보기 가능
 
+> Surface
+* 배경 색상 설정
+* Ex) Text의 배경을 넣고싶다면 Surface로 Text를 래핑한다.
+
+> modifier
+* Surface 및 Text와 같은 대부분의 ComposeUI 요소는 modifier 매개변수를 선택적으로 허용한다.
+* 수정자는 상위요소 레이아웃 내에서 UI 요소가 배치되고 표시되고 동작하는 방식을 UI에 알린다.
+* Ex) padding을 주고싶다면 Modifier.padding()과 같이 수정자를 만들 수 있다.
+
 > scafFold
 * Material 디자인을 가져올 수 있음(AppBar, Floatting Button 등)
 
