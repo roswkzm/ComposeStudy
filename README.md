@@ -78,9 +78,33 @@
 여러 리컴포지션 간에 상태를 유지하려면 remember를 사용하여 변경 가능한 상태를 기억해야 합니다.
 * 정리 composable에 변경 가능한 상태를 추가하려면 mutableStateOf를 통해 상태를 나타내고 이때 composable을 통해 mutableStateOf의 새 상태만 받는게 아닌 기존 리컴포지션 상태를 유지하려면 remember를 사용하여 현재 값이 변경된 값인지 판단하도록 한다.
 
+> Compose 상태 유지
+* remember 함수는 컴포저블이 컴포지션에 유지되는 동안에만 작동한다. 즉 기기를 회전하면 전체활동이 다시 시작되므로 모든 상태가 손실된다.
+* 이 현상은 구성이 변경되거나 프로세스가 중단될 때도 발생한다.
+* 해결책 => remember을 사용하는 대신 rememberSaveable을 사용하면 된다. rememberSaveable는 회전과 프로세스 중단에도 각 상태를 저장한다.
 
 > Compose 상태 호이스팅
 * Compose 상태 호이스팅이란 끌어올린다는 뜻을 가지고 있다. 하위 구성요소의 상태값을 상위에서 제어할 수 있도록 한다.
 * 람다식을 통해 하위 클릭이벤트 등과 같은 이벤트에 상위의 함수를 전달하여 상위에서 가지고 있는 상태값을 하위에게 전달하는 것이 아닌 하위에서 이벤트가 올라와 상위의 상태값을 컨트롤 한다.
 * Ex) onContinueClicked: () -> Unit
 * 상태 호이스팅을 사용한다면 상태가 중복되지 않고 버그가 발생하는 것을 방지할 수 있으며 Composable을 재사용 할 수 있다.
+
+> 애니메이션 효과주기
+* 이 컴포저블은 애니메이션이 완료될 때까지 애니메이션에 의해 객체의 value가 계속 업데이트 되는 상태 객체를 반환한다. (animateDpAsState은 유형이 Dp인 value를 사용한다)
+* animateDpAsState의 속성의 animationSpec에 스프링 효과를 줄 수 있는 spring을 넣어주면 해당 Dp의 변화에 대해 스프링 효과가 난다.
+* 이때 주의해야할 점은 해당 Column의 패딩은 음수가 되면 안되어 coerceAtLeast(0.dp) 속성을 준다.
+
+> 앱의 스타일 지정 및 테마 설정
+* App의 ui/theme에 Color.kt, Theme.kt, Type.kt등의 파일이 존재한다.
+* Theme.kt 파일에 가면 현재 이 프로젝트에서 사용하는 Default 테마인 ComposeStudyTheme는 MaterialTheme을 사용한다.
+* ComposeStudyTheme는 MaterialTheme을 내부적으로 래핑하므로 모든 하위 컴포저블에서 MaterialTheme의 세가지 속성인 colorScheme, typography, shapes을 가져올 수 있다.
+* 앱의 테마를 활용하다가 가끔 색상이나 글꼴 스타일의 선택에서 벗어나야 한다면 기존에 사용하고 있는 색상이나 스타일에서 copy 함수를 사용하여 선택한 스타일 위에 다른 설정을 입할 수 있다.
+```kotlin
+Text(
+    text = name,
+    style = MaterialTheme.typography.headlineMedium.copy(
+    fontWeight = FontWeight.ExtraBold
+    )
+)
+```
+* 야간모드 활성화를 하고싶다면 Composable의 Preview 속성에 uiMode = UI_MODE_NIGHT_YES를 추가한다.
