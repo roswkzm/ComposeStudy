@@ -108,3 +108,8 @@ Text(
 )
 ```
 * 야간모드 활성화를 하고싶다면 Composable의 Preview 속성에 uiMode = UI_MODE_NIGHT_YES를 추가한다.
+
+
+> 버튼을 아이콘으로 대체
+* Icons.Filled.ExpandLess와 Icons.Filled.ExpandMore를 사용합니다. 이는 material-icons-extended 아티팩트에서 사용할 수 있다.
+* 기존 Button대신 IconButton을 사용하고 해당 이미지를 Icon 속성을 이용하여(imageVector, contentDescription) 해당 아이콘의 변화를 줄 수 있다.
