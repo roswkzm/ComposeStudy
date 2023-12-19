@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -42,26 +44,36 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(onButtonClicked: () -> Unit){
+fun Greeting(onButtonClicked: () -> Unit) {
     Button(
         onClick = onButtonClicked,
-        enabled = true,
-        border = BorderStroke(2.dp, Color.Magenta),
-        shape = CircleShape, //RoundedCornerShape(10.dp)
-        contentPadding = PaddingValues(20.dp)
+        modifier = Modifier
+            .wrapContentHeight()
+            .wrapContentWidth()
+            .padding(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Magenta,
+            contentColor = Color.Cyan
+        ),
     ) {
         Icon(
-           imageVector = Icons.Filled.Search,
-            contentDescription = null
+            imageVector = Icons.Filled.Search,
+            contentDescription = null,
+            modifier = Modifier.background(Color.Blue)
         )
-        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = "Search")
+        Spacer(
+            modifier = Modifier.size(ButtonDefaults.IconSpacing).background(Color.Blue)
+        )
+        Text(
+            text = "Search",
+            modifier = Modifier.offset(x=10.dp).background(Color.Blue)
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview(){
+fun DefaultPreview() {
     ComposeStudyTheme {
         Greeting(onButtonClicked = {})
     }
