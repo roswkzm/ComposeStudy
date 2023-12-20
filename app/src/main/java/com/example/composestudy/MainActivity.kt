@@ -8,15 +8,18 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -44,30 +47,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Greeting()
+                Outer()
             }
         }
     }
 }
 
 @Composable
-fun Greeting() {
-    Column(
-        modifier = Modifier.size(100.dp),
-        horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.Bottom
-    ){
-        Text(
-            text = "첫 번째!!",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Text(
-            text = "두 번째!!"
-        )
-        Text(
-            text = "세 번째!!",
-            modifier = Modifier.align(Alignment.Start)
-        )
+fun Outer() {
+    Column{
+        Inner(modifier = Modifier
+            .width(200.dp)
+            .height(160.dp))
+    }
+}
+
+@Composable
+fun Inner(modifier : Modifier = Modifier){
+    BoxWithConstraints(modifier) {
+        if (maxHeight > 150.dp){
+            Text(text = "여기 꽤 길군요!",
+                modifier = Modifier.align(Alignment.BottomCenter))
+        }
+        Text(text = "maxWidth : $maxWidth  maxHight : $maxHeight  minWidth : $minWidth  minHight : $minHeight")
     }
 }
 
@@ -75,6 +77,6 @@ fun Greeting() {
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Greeting()
+        Outer()
     }
 }
