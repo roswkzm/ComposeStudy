@@ -112,3 +112,17 @@ Text(
 > 버튼을 아이콘으로 대체
 * Icons.Filled.ExpandLess와 Icons.Filled.ExpandMore를 사용합니다. 이는 material-icons-extended 아티팩트에서 사용할 수 있다.
 * 기존 Button대신 IconButton을 사용하고 해당 이미지를 Icon 속성을 이용하여(imageVector, contentDescription) 해당 아이콘의 변화를 줄 수 있다.
+
+
+
+## Surface VS BOX
+> ### Surface
+> Material Design 시스템에 기반한 Compose의 컨테이너이다. Surface는 일반적으로 카드 또는 패널과 같은 요소를 나타내는데 사용된다. 그림자, 경계선, 배경색 등과 같은 시각적 효과를 자동으로 처리하며, 표면에 콘텐츠를 배치하는데 사용된다.
+ex) 카드 또는 팝업창을 만들 때, Surface를 사용할 수 있다.
+
+> ### Box
+> Box
+단순한 컨테이너로, Compose의 레이아웃을 구성하는데 사용된다. Box는 자식 요소를 수직 또는 수평으로 정렬하고, 간격, 패딩 등의 스타일을 적용하는데 유용하다. Box를 사용하여 레이아웃을 생성할 때, 개발자가 직접 스타일 및 배치를 제어할 수 있다.
+ex) 텍스트 및 버튼을 수평으로 정렬하고 간격을 지정하는데 Box를 사용할 수 있다.
+
+> 요약하자면, Surface는 Material Design의 그림자와 시각적인 효과를 자동으로 처리하는 컨테이너로 사용되며, Box는 단순한 레이아웃 컨테이너로 개발자가 직접 스타일과 배치를 제어할 수 있다.
