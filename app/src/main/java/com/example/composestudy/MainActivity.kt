@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -34,11 +35,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,52 +64,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Column {
-                    Greeting(cardData)
-                    Greeting(cardData)
-                }
+                Greeting()
             }
         }
-    }
-
-    companion object{
-        val cardData = CardData(
-            imageUri = "https://raw.githubusercontent.com/roswkzm/ComposeStudy/32c8095f80aae234ed5190102e2091a9d18190e0/app/src/main/res/drawable/wall.jpg",
-            imageDescription = "캐년",
-            author = "Dalinaum",
-            description = "으아으아으아으아으아으아으ㅏ으아으아으아으ㅏ"
-        )
     }
 }
 
 @Composable
-fun Greeting(cardData : CardData) {
-    Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        ),
-        modifier = Modifier.padding(4.dp)
-    ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp)
-        ){
-            AsyncImage(
-                model = cardData.imageUri,
-                contentDescription = cardData.imageDescription,
-                modifier = Modifier.size(32.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                placeholder = ColorPainter(Color.Black))
+fun Greeting() {
+    Row (
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        var checked by remember {mutableStateOf(false)}
 
-            Spacer(modifier = Modifier.size(8.dp))
-
-            Column {
-                Text(text = cardData.author)
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(text = cardData.description)
-            }
-        }
+        Checkbox(
+            checked = checked,
+            onCheckedChange = {checked = it}
+        )
+        Text(
+            text = "프로그래머입니까?",
+            modifier = Modifier.clickable {
+                checked = !checked
+            })
     }
 }
 
@@ -111,16 +93,6 @@ fun Greeting(cardData : CardData) {
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Column {
-            Greeting(MainActivity.cardData)
-            Greeting(MainActivity.cardData)
-        }
+        Greeting()
     }
 }
-
-data class CardData(
-    val imageUri: String,
-    val imageDescription: String,
-    val author: String,
-    val description: String
-)
