@@ -1,25 +1,21 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.composestudy
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.composestudy.ui.theme.ComposeStudyTheme
 
@@ -28,53 +24,49 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Greeting("Android")
+                Greeting()
+
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name : String) {
+fun Greeting() {
+    var checked1 by remember { mutableStateOf(false) }
+    var checked2 by remember { mutableStateOf(false) }
+
     Column {
-        TopAppBar(
-            title = { Text(text = "TopAppBar") },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Cyan),
-            navigationIcon = {
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "업 네비게이션",
-                        tint = Color.Black
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "검색",
-                        tint = Color.Black
-                    )
-                }
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "설정",
-                        tint = Color.Black
-                    )
-                }
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Filled.AccountBox,
-                        contentDescription = "계정",
-                        tint = Color.Black
-                    )
-                }
-            }
+        CheckBoxWithSlotApi(checked = checked1,
+            onCheckedChanged = {checked1 = !checked1}
+        ) {
+            Text(text = "텍스트 1", modifier = Modifier.align(Alignment.CenterVertically))
+        }
+        CheckBoxWithSlotApi(checked = checked2,
+            onCheckedChanged = {checked2 = !checked2}
+        ) {
+            Text(text = "텍스트 1", modifier = Modifier.align(Alignment.CenterVertically))
+        }
+    }
+}
+
+@Composable
+fun CheckBoxWithSlotApi(
+    checked: Boolean,
+    onCheckedChanged : () -> Unit,
+    content: @Composable RowScope.() -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable {
+            onCheckedChanged()
+        }
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { onCheckedChanged() }
         )
-        
-        Text(text = "Hello $name")
+        content()
     }
 }
 
@@ -82,6 +74,6 @@ fun Greeting(name : String) {
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Greeting("Android")
+        Greeting()
     }
 }
