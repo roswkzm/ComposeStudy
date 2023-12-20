@@ -1,35 +1,26 @@
 package com.example.composestudy
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.composestudy.ui.theme.ComposeStudyTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,67 +28,60 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Greeting()
-
-            }
-        }
-    }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Greeting() {
-    var checked by remember { mutableStateOf(false) }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Scaffold App")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {}) {
-                        Image(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "뒤로 가기"
-                        )
-                    }
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    Greeting(imageDataItems)
                 }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
-            }
-        }
-        ) {
-        Surface(modifier = Modifier
-            .padding(8.dp)
-            .fillMaxSize()) {
-            CheckBoxWithContent(
-                checked = checked,
-                toggleState = { checked = !checked }
-            ) {
-                Text(text = "컴포즈를 좋아합니다.", color = Color.Black)
             }
         }
     }
 }
 
+data class ItemData(
+    val imageUri: String,
+    val title: String,
+    val description: String
+)
+
 @Composable
-fun CheckBoxWithContent(
-    checked: Boolean,
-    toggleState : () -> Unit,
-    content : @Composable RowScope.() -> Unit
-){
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { toggleState() }
+fun Greeting(itemList: List<ItemData>) {
+    LazyColumn {
+        item {
+            Item(itemData = itemList[0])
+        }
+        items(itemList) {
+            Item(itemData = it)
+        }
+    }
+}
+
+@Composable
+fun Item(itemData: ItemData) {
+    Card(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 10.dp
+        ),
+        modifier = Modifier.padding(16.dp)
     ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = {toggleState()}
-        )
-        content()
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            AsyncImage(
+                model = itemData.imageUri,
+                contentDescription = itemData.title,
+                placeholder = painterResource(id = R.drawable.wall)
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = itemData.title,
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = itemData.description
+            )
+        }
     }
 }
 
@@ -106,6 +90,68 @@ fun CheckBoxWithContent(
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Greeting()
+        Greeting(imageDataItems)
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ItemPreview() {
+    ComposeStudyTheme {
+        Item(
+            ItemData(
+                imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a1.jpg?raw=true",
+                title = "사진 1 입니다.",
+                description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+            )
+        )
+    }
+}
+
+val imageDataItems = listOf(
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a1.jpg?raw=true",
+        title = "사진 1 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a2.jpg?raw=true",
+        title = "사진 2 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a3.jpg?raw=true",
+        title = "사진 3 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a4.jpg?raw=true",
+        title = "사진 4 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a5.jpg?raw=true",
+        title = "사진 5 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a6.jpg?raw=true",
+        title = "사진 6 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a7.jpg?raw=true",
+        title = "사진 7 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a8.jpg?raw=true",
+        title = "사진 8 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    ),
+    ItemData(
+        imageUri = "https://github.com/Fastcampus-JetpackCompose-1/part1-chapter3/blob/main/part1-chapter3-18/app/src/main/res/drawable-xhdpi/a9.jpg?raw=true",
+        title = "사진 9 입니다.",
+        description = "가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하가나다라마바사아자차카타ㅠㅏ하"
+    )
+)
