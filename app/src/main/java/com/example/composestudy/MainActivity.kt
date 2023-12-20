@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.composestudy
 
 import android.os.Bundle
@@ -36,10 +38,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,20 +78,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting() {
-    Row (
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        var checked by remember {mutableStateOf(false)}
-
-        Checkbox(
-            checked = checked,
-            onCheckedChange = {checked = it}
-        )
-        Text(
-            text = "프로그래머입니까?",
-            modifier = Modifier.clickable {
-                checked = !checked
+    var name by remember{ mutableStateOf("Tom") }
+    Column (modifier = Modifier.padding(16.dp)){
+        OutlinedTextField(
+            value = name,
+            onValueChange = {name = it},
+            label = {
+                Text(text = "이름")
             })
+        Spacer(modifier = Modifier.size(8.dp))
+        Text(text = "Hello $name")
     }
 }
 
