@@ -8,6 +8,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,28 +52,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting() {
-    Row(
-        modifier = Modifier.height(40.dp).width(300.dp),
-        verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.SpaceEvenly
-        ){
+    Column(
+        modifier = Modifier.size(100.dp),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Bottom
+    ){
         Text(
             text = "첫 번째!!",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.Top)
-                .weight(3f)
-                .background(Color.Magenta)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
-        Icon(
-            imageVector = Icons.Filled.AccountBox,
-            contentDescription = "추가",
-            modifier = Modifier.weight(1f).background(Color.Cyan)
+        Text(
+            text = "두 번째!!"
         )
-
         Text(
             text = "세 번째!!",
-            modifier = Modifier.weight(3f).background(Color.Blue)
+            modifier = Modifier.align(Alignment.Start)
         )
     }
 }
