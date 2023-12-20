@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -31,42 +33,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting(onButtonClicked = {
-                        Toast.makeText(this, "Button Clicked.", Toast.LENGTH_SHORT).show()
-                    })
-                }
+                Greeting("Android")
             }
         }
     }
 }
 
 @Composable
-fun Greeting(onButtonClicked: () -> Unit) {
-    Button(
-        onClick = onButtonClicked,
-        modifier = Modifier
-            .wrapContentHeight()
-            .wrapContentWidth()
-            .padding(10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Magenta,
-            contentColor = Color.Cyan
-        ),
+fun Greeting(name : String) {
+    Surface(
+        modifier = Modifier.padding(5.dp),
+        shadowElevation = 10.dp,
+        border = BorderStroke(width = 2.dp, color = Color.Magenta),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.error,
+        contentColor = Color.Black
     ) {
-        Icon(
-            imageVector = Icons.Filled.Search,
-            contentDescription = null,
-            modifier = Modifier.background(Color.Blue)
-        )
-        Spacer(
-            modifier = Modifier.size(ButtonDefaults.IconSpacing).background(Color.Blue)
-        )
         Text(
-            text = "Search",
-            modifier = Modifier.offset(x=10.dp).background(Color.Blue)
+            text = "Hello $name!",
+            modifier = Modifier.padding(8.dp)
         )
     }
 }
@@ -75,6 +60,6 @@ fun Greeting(onButtonClicked: () -> Unit) {
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Greeting(onButtonClicked = {})
+        Greeting("Android")
     }
 }
