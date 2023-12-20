@@ -31,6 +31,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,7 +41,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,24 +58,52 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Greeting()
+                Column {
+                    Greeting(cardData)
+                    Greeting(cardData)
+                }
             }
         }
+    }
+
+    companion object{
+        val cardData = CardData(
+            imageUri = "https://raw.githubusercontent.com/roswkzm/ComposeStudy/32c8095f80aae234ed5190102e2091a9d18190e0/app/src/main/res/drawable/wall.jpg",
+            imageDescription = "캐년",
+            author = "Dalinaum",
+            description = "으아으아으아으아으아으아으ㅏ으아으아으아으ㅏ"
+        )
     }
 }
 
 @Composable
-fun Greeting() {
-    val painter = rememberImagePainter(data = "https://raw.githubusercontent.com/roswkzm/ComposeStudy/32c8095f80aae234ed5190102e2091a9d18190e0/app/src/main/res/drawable/wall.jpg")
-    Column {
-        Image(
-            painter = painter,
-            contentDescription = "캐년"
-        )
+fun Greeting(cardData : CardData) {
+    Card(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        ),
+        modifier = Modifier.padding(4.dp)
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp)
+        ){
+            AsyncImage(
+                model = cardData.imageUri,
+                contentDescription = cardData.imageDescription,
+                modifier = Modifier.size(32.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                placeholder = ColorPainter(Color.Black))
 
-        AsyncImage(
-            model = "https://raw.githubusercontent.com/roswkzm/ComposeStudy/32c8095f80aae234ed5190102e2091a9d18190e0/app/src/main/res/drawable/wall.jpg",
-            contentDescription = "캐년")
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Column {
+                Text(text = cardData.author)
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(text = cardData.description)
+            }
+        }
     }
 }
 
@@ -77,6 +111,16 @@ fun Greeting() {
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Greeting()
+        Column {
+            Greeting(MainActivity.cardData)
+            Greeting(MainActivity.cardData)
+        }
     }
 }
+
+data class CardData(
+    val imageUri: String,
+    val imageDescription: String,
+    val author: String,
+    val description: String
+)
