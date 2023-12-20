@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,29 +50,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                Outer()
+                Greeting()
             }
         }
     }
 }
 
 @Composable
-fun Outer() {
-    Column{
-        Inner(modifier = Modifier
-            .width(200.dp)
-            .height(160.dp))
-    }
-}
-
-@Composable
-fun Inner(modifier : Modifier = Modifier){
-    BoxWithConstraints(modifier) {
-        if (maxHeight > 150.dp){
-            Text(text = "여기 꽤 길군요!",
-                modifier = Modifier.align(Alignment.BottomCenter))
-        }
-        Text(text = "maxWidth : $maxWidth  maxHight : $maxHeight  minWidth : $minWidth  minHight : $minHeight")
+fun Greeting() {
+    Column {
+        Image(
+            painter = painterResource(id = R.drawable.wall),
+            contentDescription = "엔텔로프 캐년"
+        )
+        Image(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "세팅"
+        )
     }
 }
 
@@ -77,6 +74,6 @@ fun Inner(modifier : Modifier = Modifier){
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Outer()
+        Greeting()
     }
 }
