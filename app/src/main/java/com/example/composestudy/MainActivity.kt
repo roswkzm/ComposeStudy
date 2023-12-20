@@ -43,6 +43,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.example.composestudy.ui.theme.ComposeStudyTheme
 
 class MainActivity : ComponentActivity() {
@@ -58,15 +60,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting() {
+    val painter = rememberImagePainter(data = "https://raw.githubusercontent.com/roswkzm/ComposeStudy/32c8095f80aae234ed5190102e2091a9d18190e0/app/src/main/res/drawable/wall.jpg")
     Column {
         Image(
-            painter = painterResource(id = R.drawable.wall),
-            contentDescription = "엔텔로프 캐년"
+            painter = painter,
+            contentDescription = "캐년"
         )
-        Image(
-            imageVector = Icons.Filled.Settings,
-            contentDescription = "세팅"
-        )
+
+        AsyncImage(
+            model = "https://raw.githubusercontent.com/roswkzm/ComposeStudy/32c8095f80aae234ed5190102e2091a9d18190e0/app/src/main/res/drawable/wall.jpg",
+            contentDescription = "캐년")
     }
 }
 
