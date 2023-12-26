@@ -36,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composestudy.ui.theme.ComposeStudyTheme
 
 class MainActivity : ComponentActivity() {
@@ -54,16 +56,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopLevel() {
-    val (text, setText) = remember { mutableStateOf("") }
-    val toDoList = remember { mutableStateListOf<ToDoData>() }
+class ToDoViewModel : ViewModel() {
+    val text = mutableStateOf("")
+    val toDoList = mutableStateListOf<ToDoData>()
 
     val onSubmit: (String) -> Unit = {
         val key = (toDoList.lastOrNull()?.key ?: 0) + 1
-        toDoList.add(ToDoData(key, text))
-        setText("")
+        toDoList.add(ToDoData(key, text.value))
+        text.value = ""
     }
 
     val onToggle: (Int, Boolean) -> Unit = { key, checked ->
@@ -81,29 +81,65 @@ fun TopLevel() {
         val i = toDoList.indexOfFirst { it.key == key }
         toDoList[i] = toDoList[i].copy(text = text)
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopLevel(viewModel: ToDoViewModel = viewModel()) {
+//    val (text, setText) = remember { mutableStateOf("") }
+//    val toDoList = remember { mutableStateListOf<ToDoData>() }
+
+//    val onSubmit: (String) -> Unit = {
+//        val key = (toDoList.lastOrNull()?.key ?: 0) + 1
+//        toDoList.add(ToDoData(key, viewModel.text.value))
+//        viewModel.text.value = ""
+//    }
+//
+//    val onToggle: (Int, Boolean) -> Unit = { key, checked ->
+//        val i = toDoList.indexOfFirst { it.key == key }
+//        // MutableStateList가 추가, 삭제, 변경되었을 때만 UI가 갱신되므로 Copy를 통해 항목 내부의 값을 바꾸기보다 항목 자체를 바꾸도록 설정
+//        toDoList[i] = toDoList[i].copy(done = checked)
+//    }
+//
+//    val onDelete: (Int) -> Unit = { key ->
+//        val i = toDoList.indexOfFirst { it.key == key }
+//        toDoList.removeAt(i)
+//    }
+//
+//    val onEdit: (Int, String) -> Unit = { key, text ->
+//        val i = toDoList.indexOfFirst { it.key == key }
+//        toDoList[i] = toDoList[i].copy(text = text)
+//    }
 
     // 단계 4: `onSubmit`, `onEdit`, `onToggle`, `onDelete`를
-    // 만들어 `ToDo`에 연결합니다.
+    // 만들어 ToDo에 연결합니다.
 
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
             ToDoInput(
-                text = text,
-                onTextChange = setText,
-                onSubmit = onSubmit
+                text = viewModel.text.value,
+                onTextChange = {
+                    viewModel.text.value = it
+                },
+                onSubmit = viewModel.onSubmit
             )
             // 단계 3: `LazyColumn`으로 `toDoList`를 표시합시다.
             // `key`를 `toDoData`의 `key`를 사용합니다.
 
             LazyColumn {
-                items(toDoList, key = { it.key }) { toDoData ->
+                items(
+                    viewModel.toDoList,
+                    key = {
+                        it.key
+                    }
+                ) { toDoData ->
                     ToDo(
                         toDoData = toDoData,
-                        onEdit = onEdit,
-                        onToggle = onToggle,
-                        onDelete = onDelete
+                        onEdit = viewModel.onEdit,
+                        onToggle = viewModel.onToggle,
+                        onDelete = viewModel.onDelete
                     )
                 }
             }
