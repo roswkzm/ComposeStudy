@@ -3,20 +3,17 @@ package com.example.composestudy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -39,117 +36,151 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
+                // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting()
+                    Animation2Ex()
                 }
             }
         }
     }
+}
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun Greeting() {
-        var helloWorldVisible by remember { mutableStateOf(true) }
-        var isRed by remember { mutableStateOf(false) }
+@Composable
+fun Animation2Ex() {
+    var isDarkMode by remember { mutableStateOf(false) }
 
-        val backgroundColor by animateColorAsState(
-            targetValue = if (isRed) Color.Red else Color.White
-        )
+    // 단계 1: `updateTransition` 수행하고 `targetState`를 `isDarkMode`로
+    // 설정합니다. `transition`으로 리턴을 받습니다.
 
-        val alpha by animateFloatAsState(
-            targetValue = if (isRed) 1.0f else 0.5f
-        )
+    val transition = updateTransition(targetState = isDarkMode, label = "다크 모드 애니메이션")
 
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .background(backgroundColor)
-                .alpha(alpha)
-        ) {
-            AnimatedVisibility(
-                visible = helloWorldVisible,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Text(text = "Hello World!")
-            }
+    // 단계 2: `transition`에 대해 `animateColor`를 호출해 `backgroundColor`를 받습니다.
+    // 배경색상을 만듭시다. false일 때 하얀 배경, true일 때 검은 배경.
 
-            Row(
-                Modifier.selectable(
-                    selected = helloWorldVisible,
-                    onClick = {
-                        helloWorldVisible = true
-                    }
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                RadioButton(
-                    selected = helloWorldVisible,
-                    onClick = { helloWorldVisible = true }
-                )
-                Text(text = "Hello World 보이기")
-            }
-
-            Row(
-                Modifier.selectable(
-                    selected = !helloWorldVisible,
-                    onClick = {
-                        helloWorldVisible = false
-                    }
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                RadioButton(
-                    selected = !helloWorldVisible,
-                    onClick = { helloWorldVisible = false }
-                )
-                Text(text = "Hello World 보이기")
-            }
-
-            Text(text = "배경 색을 바꾸어 봅시다.")
-
-            Row(
-                Modifier.selectable(
-                    selected = !isRed,
-                    onClick = {
-                        isRed = false
-                    }
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                RadioButton(
-                    selected = !isRed,
-                    onClick = { isRed = false }
-                )
-                Text(text = "흰색")
-            }
-
-            Row(
-                Modifier.selectable(
-                    selected = isRed,
-                    onClick = {
-                        isRed = true
-                    }
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                RadioButton(
-                    selected = isRed,
-                    onClick = { isRed = true }
-                )
-                Text(text = "빨간색")
-            }
+    val backgroundColor by transition.animateColor(label = "다크 모드 배경색상 애니메이션") { state ->
+        when(state) {
+            false -> Color.White
+            true -> Color.Black
         }
     }
 
-    @Preview(showBackground = true)
-    @Composable
-    fun DefaultPreview() {
-        ComposeStudyTheme {
-            Greeting()
+    // 단계 3: 글자 색상을 만듭시다.
+
+    val color by transition.animateColor(label = "다크 모드 글자 색상 애니메이션") {state ->
+        when(state) {
+            false -> Color.Black
+            true -> Color.White
         }
+    }
+
+    // 단계 4: `animateFloat`를 호출해서 알파 값을 만듭시다.
+
+    val alpha by transition.animateFloat(label = "다크모드 투명도 애니메이션") { state ->
+        when(state) {
+            false -> 0.7f
+            true -> 1f
+        }
+    }
+
+    // 단계 5: 컬럼에 배경과 알파를 적용합시다.
+    Column (
+        modifier = Modifier
+            .background(backgroundColor)
+            .alpha(alpha)
+    ){
+        // 단계 6: 라디오 버튼에 글자 색을 적용합시다.
+        RadioButtonWithText(text = "일반 모드", color = color, selected = !isDarkMode) {
+            isDarkMode = false
+        }
+        RadioButtonWithText(text = "다크 모드", color = color, selected = isDarkMode) {
+            isDarkMode = true
+        }
+
+        // 단계 7: Crossfade를 이용해 `isDarkMode`가 참일 경우
+        // `Row`로 항목을 표현하고 거짓일 경우 `Column`으로 표현해봅시다.
+        Crossfade(targetState = isDarkMode, label = "전환되는 과정에서 애니메이션을 발생하게 해줌") { state ->
+            when(state){
+                false -> {
+                    Column {
+                        Box(modifier = Modifier
+                            .background(Color.Red)
+                            .size(20.dp)) {
+                            Text("1")
+                        }
+                        Box(modifier = Modifier
+                            .background(Color.Magenta)
+                            .size(20.dp)) {
+                            Text("2")
+                        }
+                        Box(modifier = Modifier
+                            .background(Color.Blue)
+                            .size(20.dp)) {
+                            Text("3")
+                        }
+                    }
+                }
+                true -> {
+                    Row {
+                        Box(modifier = Modifier
+                            .background(Color.Red)
+                            .size(20.dp)) {
+                            Text("A")
+                        }
+                        Box(modifier = Modifier
+                            .background(Color.Magenta)
+                            .size(20.dp)) {
+                            Text("B")
+                        }
+                        Box(modifier = Modifier
+                            .background(Color.Blue)
+                            .size(20.dp)) {
+                            Text("C")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    ComposeStudyTheme {
+        Animation2Ex()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RadioButtonWithTextPreview() {
+    ComposeStudyTheme {
+        RadioButtonWithText(
+            text = "라디오 버튼",
+            color = Color.Red,
+            selected = true,
+            onClick = {}
+        )
+    }
+}
+
+@Composable
+fun RadioButtonWithText(
+    text: String,
+    color: Color = Color.Black,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.selectable(
+            selected = selected,
+            onClick = onClick
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Text(text = text, color = color)
     }
 }
