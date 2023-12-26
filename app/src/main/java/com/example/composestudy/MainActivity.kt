@@ -5,19 +5,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.composestudy.ui.theme.ComposeStudyTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,38 +45,90 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun Greeting() {
-        var expandDropDownMenu by remember { mutableStateOf(false) }
-        var counter by remember { mutableStateOf(0) }
+        var pyeong by rememberSaveable { mutableStateOf("23") }
+        var squaremeter by rememberSaveable { mutableStateOf((23 * 3.306).toString()) }
 
-        Column {
-            Button(onClick = { expandDropDownMenu = true }) {
-                Text(text = "드롭다운 메뉴 열기")
+        PyeongToSquareMeterStateless(
+            pyeong,
+            squaremeter
+        ) {
+            if (it.isBlank()) {
+                pyeong = ""
+                squaremeter = ""
+                return@PyeongToSquareMeterStateless
             }
-            Text(text = "카운터 : $counter")
+            val numericValue = it.toFloatOrNull() ?: return@PyeongToSquareMeterStateless
+            pyeong = it
+            squaremeter = (numericValue * 3.306).toString()
         }
 
-        DropdownMenu(
-            expanded = expandDropDownMenu,
-            onDismissRequest = {
-                expandDropDownMenu = false
-            }) {
-            DropdownMenuItem(
-                text = {
-                    Text(text = "증가")
+//        Column(
+//            modifier = Modifier.padding(16.dp)
+//        ) {
+//            OutlinedTextField(
+//                value = pyeong,
+//                onValueChange = {
+//                    if (it.isBlank()){
+//                        pyeong = ""
+//                        squaremeter = ""
+//                        return@OutlinedTextField
+//                    }
+//                    val numericValue = it.toFloatOrNull() ?: return@OutlinedTextField
+//                    pyeong = it
+//                    squaremeter = (numericValue * 3.306).toString()
+//                },
+//                label = {
+//                    Text(text = "평")
+//                },
+//                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
+//            )
+//
+//            OutlinedTextField(
+//                value = squaremeter,
+//                onValueChange = {
+//
+//                },
+//                label = {
+//                    Text(text = "제곱미터")
+//                },
+//                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
+//            )
+//        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun PyeongToSquareMeterStateless(
+        pyeong: String,
+        squareMeter: String,
+        onPyeongChange: (String) -> Unit
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            OutlinedTextField(
+                value = pyeong,
+                onValueChange = {
+                    onPyeongChange
                 },
-                onClick = {
-                    counter++
-                }
+                label = {
+                    Text(text = "평")
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
             )
-            DropdownMenuItem(
-                text = {
-                    Text(text = "감소")
+
+            OutlinedTextField(
+                value = squareMeter,
+                onValueChange = {
+
                 },
-                onClick = {
-                    counter--
-                }
+                label = {
+                    Text(text = "제곱미터")
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
             )
         }
     }
