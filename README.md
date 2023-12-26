@@ -126,3 +126,7 @@ ex) 카드 또는 팝업창을 만들 때, Surface를 사용할 수 있다.
 ex) 텍스트 및 버튼을 수평으로 정렬하고 간격을 지정하는데 Box를 사용할 수 있다.
 
 > 요약하자면, Surface는 Material Design의 그림자와 시각적인 효과를 자동으로 처리하는 컨테이너로 사용되며, Box는 단순한 레이아웃 컨테이너로 개발자가 직접 스타일과 배치를 제어할 수 있다.
+
+## Tip
+> mutableStateListOf - 추가, 삭제, 대입 -> UI가 갱신된다. 단, 각 항목 내부의 필드가 바뀔때는 갱신이 안된다.
+  LiveData<List<T>>.observeAsState() - List가 통채로 다른 List로 바뀌었을 때만 State가 갱신된다.
