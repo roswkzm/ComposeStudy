@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composestudy.ui.theme.ComposeStudyTheme
@@ -57,13 +60,22 @@ class MainActivity : ComponentActivity() {
 }
 
 class ToDoViewModel : ViewModel() {
-    val text = mutableStateOf("")
+    //    val text = mutableStateOf("")
+    private val _text = MutableLiveData("")
+    val text: LiveData<String> = _text
+    val setText: (String) -> Unit = {
+        _text.value = it
+    }
+
+    // mutableStateListOf - 추가, 삭제, 대입 -> UI가 갱신된다. 단, 각 항목 내부의 필드가 바뀔때는 갱신이 안된다.
+    // LiveData<List<T>>.observeAsState() - List가 통채로 다른 List로 바뀌었을 때만 State가 갱신된다.
+
     val toDoList = mutableStateListOf<ToDoData>()
 
     val onSubmit: (String) -> Unit = {
         val key = (toDoList.lastOrNull()?.key ?: 0) + 1
-        toDoList.add(ToDoData(key, text.value))
-        text.value = ""
+        toDoList.add(ToDoData(key, it))
+        _text.value = ""
     }
 
     val onToggle: (Int, Boolean) -> Unit = { key, checked ->
@@ -86,42 +98,14 @@ class ToDoViewModel : ViewModel() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopLevel(viewModel: ToDoViewModel = viewModel()) {
-//    val (text, setText) = remember { mutableStateOf("") }
-//    val toDoList = remember { mutableStateListOf<ToDoData>() }
-
-//    val onSubmit: (String) -> Unit = {
-//        val key = (toDoList.lastOrNull()?.key ?: 0) + 1
-//        toDoList.add(ToDoData(key, viewModel.text.value))
-//        viewModel.text.value = ""
-//    }
-//
-//    val onToggle: (Int, Boolean) -> Unit = { key, checked ->
-//        val i = toDoList.indexOfFirst { it.key == key }
-//        // MutableStateList가 추가, 삭제, 변경되었을 때만 UI가 갱신되므로 Copy를 통해 항목 내부의 값을 바꾸기보다 항목 자체를 바꾸도록 설정
-//        toDoList[i] = toDoList[i].copy(done = checked)
-//    }
-//
-//    val onDelete: (Int) -> Unit = { key ->
-//        val i = toDoList.indexOfFirst { it.key == key }
-//        toDoList.removeAt(i)
-//    }
-//
-//    val onEdit: (Int, String) -> Unit = { key, text ->
-//        val i = toDoList.indexOfFirst { it.key == key }
-//        toDoList[i] = toDoList[i].copy(text = text)
-//    }
-
-    // 단계 4: `onSubmit`, `onEdit`, `onToggle`, `onDelete`를
-    // 만들어 ToDo에 연결합니다.
-
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
             ToDoInput(
-                text = viewModel.text.value,
+                text = viewModel.text.observeAsState("").value,
                 onTextChange = {
-                    viewModel.text.value = it
+                    viewModel.setText(it)
                 },
                 onSubmit = viewModel.onSubmit
             )

@@ -72,5 +72,12 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    // ViewModel utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+    // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+
+    implementation("androidx.compose.runtime:runtime-livedata:1.3.2")
 }
