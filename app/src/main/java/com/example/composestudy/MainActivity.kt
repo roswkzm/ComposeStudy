@@ -3,28 +3,32 @@ package com.example.composestudy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,91 +52,98 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun Greeting() {
-        var pyeong by rememberSaveable { mutableStateOf("23") }
-        var squaremeter by rememberSaveable { mutableStateOf((23 * 3.306).toString()) }
+        var helloWorldVisible by remember { mutableStateOf(true) }
+        var isRed by remember { mutableStateOf(false) }
 
-        PyeongToSquareMeterStateless(
-            pyeong,
-            squaremeter
-        ) {
-            if (it.isBlank()) {
-                pyeong = ""
-                squaremeter = ""
-                return@PyeongToSquareMeterStateless
-            }
-            val numericValue = it.toFloatOrNull() ?: return@PyeongToSquareMeterStateless
-            pyeong = it
-            squaremeter = (numericValue * 3.306).toString()
-        }
+        val backgroundColor by animateColorAsState(
+            targetValue = if (isRed) Color.Red else Color.White
+        )
 
-//        Column(
-//            modifier = Modifier.padding(16.dp)
-//        ) {
-//            OutlinedTextField(
-//                value = pyeong,
-//                onValueChange = {
-//                    if (it.isBlank()){
-//                        pyeong = ""
-//                        squaremeter = ""
-//                        return@OutlinedTextField
-//                    }
-//                    val numericValue = it.toFloatOrNull() ?: return@OutlinedTextField
-//                    pyeong = it
-//                    squaremeter = (numericValue * 3.306).toString()
-//                },
-//                label = {
-//                    Text(text = "평")
-//                },
-//                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
-//            )
-//
-//            OutlinedTextField(
-//                value = squaremeter,
-//                onValueChange = {
-//
-//                },
-//                label = {
-//                    Text(text = "제곱미터")
-//                },
-//                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
-//            )
-//        }
-    }
+        val alpha by animateFloatAsState(
+            targetValue = if (isRed) 1.0f else 0.5f
+        )
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun PyeongToSquareMeterStateless(
-        pyeong: String,
-        squareMeter: String,
-        onPyeongChange: (String) -> Unit
-    ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .background(backgroundColor)
+                .alpha(alpha)
         ) {
-            OutlinedTextField(
-                value = pyeong,
-                onValueChange = {
-                    onPyeongChange
-                },
-                label = {
-                    Text(text = "평")
-                },
-                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
-            )
+            AnimatedVisibility(
+                visible = helloWorldVisible,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Text(text = "Hello World!")
+            }
 
-            OutlinedTextField(
-                value = squareMeter,
-                onValueChange = {
+            Row(
+                Modifier.selectable(
+                    selected = helloWorldVisible,
+                    onClick = {
+                        helloWorldVisible = true
+                    }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                RadioButton(
+                    selected = helloWorldVisible,
+                    onClick = { helloWorldVisible = true }
+                )
+                Text(text = "Hello World 보이기")
+            }
 
-                },
-                label = {
-                    Text(text = "제곱미터")
-                },
-                colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
-            )
+            Row(
+                Modifier.selectable(
+                    selected = !helloWorldVisible,
+                    onClick = {
+                        helloWorldVisible = false
+                    }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                RadioButton(
+                    selected = !helloWorldVisible,
+                    onClick = { helloWorldVisible = false }
+                )
+                Text(text = "Hello World 보이기")
+            }
+
+            Text(text = "배경 색을 바꾸어 봅시다.")
+
+            Row(
+                Modifier.selectable(
+                    selected = !isRed,
+                    onClick = {
+                        isRed = false
+                    }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                RadioButton(
+                    selected = !isRed,
+                    onClick = { isRed = false }
+                )
+                Text(text = "흰색")
+            }
+
+            Row(
+                Modifier.selectable(
+                    selected = isRed,
+                    onClick = {
+                        isRed = true
+                    }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                RadioButton(
+                    selected = isRed,
+                    onClick = { isRed = true }
+                )
+                Text(text = "빨간색")
+            }
         }
     }
-
 
     @Preview(showBackground = true)
     @Composable
