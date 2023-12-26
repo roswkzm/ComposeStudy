@@ -1,32 +1,39 @@
 package com.example.composestudy
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composestudy.ui.theme.ComposeStudyTheme
@@ -36,109 +43,68 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeStudyTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    Animation2Ex()
+                    TopLevel()
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Animation2Ex() {
-    var isDarkMode by remember { mutableStateOf(false) }
+fun TopLevel() {
+    val (text, setText) = remember { mutableStateOf("") }
+    val toDoList = remember { mutableStateListOf<ToDoData>() }
 
-    // 단계 1: `updateTransition` 수행하고 `targetState`를 `isDarkMode`로
-    // 설정합니다. `transition`으로 리턴을 받습니다.
-
-    val transition = updateTransition(targetState = isDarkMode, label = "다크 모드 애니메이션")
-
-    // 단계 2: `transition`에 대해 `animateColor`를 호출해 `backgroundColor`를 받습니다.
-    // 배경색상을 만듭시다. false일 때 하얀 배경, true일 때 검은 배경.
-
-    val backgroundColor by transition.animateColor(label = "다크 모드 배경색상 애니메이션") { state ->
-        when(state) {
-            false -> Color.White
-            true -> Color.Black
-        }
+    val onSubmit: (String) -> Unit = {
+        val key = (toDoList.lastOrNull()?.key ?: 0) + 1
+        toDoList.add(ToDoData(key, text))
+        setText("")
     }
 
-    // 단계 3: 글자 색상을 만듭시다.
-
-    val color by transition.animateColor(label = "다크 모드 글자 색상 애니메이션") {state ->
-        when(state) {
-            false -> Color.Black
-            true -> Color.White
-        }
+    val onToggle: (Int, Boolean) -> Unit = { key, checked ->
+        val i = toDoList.indexOfFirst { it.key == key }
+        // MutableStateList가 추가, 삭제, 변경되었을 때만 UI가 갱신되므로 Copy를 통해 항목 내부의 값을 바꾸기보다 항목 자체를 바꾸도록 설정
+        toDoList[i] = toDoList[i].copy(done = checked)
     }
 
-    // 단계 4: `animateFloat`를 호출해서 알파 값을 만듭시다.
-
-    val alpha by transition.animateFloat(label = "다크모드 투명도 애니메이션") { state ->
-        when(state) {
-            false -> 0.7f
-            true -> 1f
-        }
+    val onDelete: (Int) -> Unit = { key ->
+        val i = toDoList.indexOfFirst { it.key == key }
+        toDoList.removeAt(i)
     }
 
-    // 단계 5: 컬럼에 배경과 알파를 적용합시다.
-    Column (
-        modifier = Modifier
-            .background(backgroundColor)
-            .alpha(alpha)
-    ){
-        // 단계 6: 라디오 버튼에 글자 색을 적용합시다.
-        RadioButtonWithText(text = "일반 모드", color = color, selected = !isDarkMode) {
-            isDarkMode = false
-        }
-        RadioButtonWithText(text = "다크 모드", color = color, selected = isDarkMode) {
-            isDarkMode = true
-        }
+    val onEdit: (Int, String) -> Unit = { key, text ->
+        val i = toDoList.indexOfFirst { it.key == key }
+        toDoList[i] = toDoList[i].copy(text = text)
+    }
 
-        // 단계 7: Crossfade를 이용해 `isDarkMode`가 참일 경우
-        // `Row`로 항목을 표현하고 거짓일 경우 `Column`으로 표현해봅시다.
-        Crossfade(targetState = isDarkMode, label = "전환되는 과정에서 애니메이션을 발생하게 해줌") { state ->
-            when(state){
-                false -> {
-                    Column {
-                        Box(modifier = Modifier
-                            .background(Color.Red)
-                            .size(20.dp)) {
-                            Text("1")
-                        }
-                        Box(modifier = Modifier
-                            .background(Color.Magenta)
-                            .size(20.dp)) {
-                            Text("2")
-                        }
-                        Box(modifier = Modifier
-                            .background(Color.Blue)
-                            .size(20.dp)) {
-                            Text("3")
-                        }
-                    }
-                }
-                true -> {
-                    Row {
-                        Box(modifier = Modifier
-                            .background(Color.Red)
-                            .size(20.dp)) {
-                            Text("A")
-                        }
-                        Box(modifier = Modifier
-                            .background(Color.Magenta)
-                            .size(20.dp)) {
-                            Text("B")
-                        }
-                        Box(modifier = Modifier
-                            .background(Color.Blue)
-                            .size(20.dp)) {
-                            Text("C")
-                        }
-                    }
+    // 단계 4: `onSubmit`, `onEdit`, `onToggle`, `onDelete`를
+    // 만들어 `ToDo`에 연결합니다.
+
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            ToDoInput(
+                text = text,
+                onTextChange = setText,
+                onSubmit = onSubmit
+            )
+            // 단계 3: `LazyColumn`으로 `toDoList`를 표시합시다.
+            // `key`를 `toDoData`의 `key`를 사용합니다.
+
+            LazyColumn {
+                items(toDoList, key = { it.key }) { toDoData ->
+                    ToDo(
+                        toDoData = toDoData,
+                        onEdit = onEdit,
+                        onToggle = onToggle,
+                        onDelete = onDelete
+                    )
                 }
             }
         }
@@ -149,38 +115,143 @@ fun Animation2Ex() {
 @Composable
 fun DefaultPreview() {
     ComposeStudyTheme {
-        Animation2Ex()
+        TopLevel()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ToDoInput(
+    text: String,
+    onTextChange: (String) -> Unit,
+    onSubmit: (String) -> Unit
+) {
+    val context = LocalContext.current
+
+    Row(modifier = Modifier.padding(8.dp)) {
+        OutlinedTextField(
+            value = text,
+            onValueChange = onTextChange,
+            modifier = Modifier.weight(1f),
+            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        Button(onClick = {
+            if (text.isNullOrEmpty()) {
+                Toast.makeText(context, "텍스트를 입력하세요.", Toast.LENGTH_SHORT).show()
+                return@Button
+            }
+            onSubmit(text)
+        }) {
+            Text("입력")
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun RadioButtonWithTextPreview() {
+fun ToDoInputPreview() {
     ComposeStudyTheme {
-        RadioButtonWithText(
-            text = "라디오 버튼",
-            color = Color.Red,
-            selected = true,
-            onClick = {}
-        )
+        ToDoInput("테스트", {}, {})
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RadioButtonWithText(
-    text: String,
-    color: Color = Color.Black,
-    selected: Boolean,
-    onClick: () -> Unit
+fun ToDo(
+    toDoData: ToDoData,
+    onEdit: (key: Int, text: String) -> Unit = { _, _ -> },
+    onToggle: (key: Int, checked: Boolean) -> Unit = { _, _ -> },
+    onDelete: (key: Int) -> Unit = {}
 ) {
-    Row(
-        modifier = Modifier.selectable(
-            selected = selected,
-            onClick = onClick
-        ),
-        verticalAlignment = Alignment.CenterVertically
+    var isEditing by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier.padding(4.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
     ) {
-        RadioButton(selected = selected, onClick = onClick)
-        Text(text = text, color = color)
+
+        // 단계 1: `Row`를 만들고 `toDoData.text`를 출력하고
+        // 완료를 체크하는 체크박스, 수정 버튼, 삭제 버튼을 만드세요.
+
+        // 단계 2: `Crossfade`를 통해 `isEditing`을 따라 다른
+        // UI를 보여줍니다. `OutlinedTextField`와 `Button을
+        // 넣어봅시다.
+        Crossfade(targetState = isEditing, label = "편집상태 혹은 보기상태") {
+            when (it) {
+                false -> {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = toDoData.text,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(text = "완료")
+
+                        Checkbox(
+                            checked = toDoData.done,
+                            onCheckedChange = { checked ->
+                                onToggle(toDoData.key, checked)
+                            }
+                        )
+
+                        Button(onClick = {
+                            isEditing = true
+                        }) {
+                            Text(text = "수정")
+                        }
+
+                        Spacer(modifier = Modifier.size(4.dp))
+
+                        Button(onClick = {
+                            onDelete(toDoData.key)
+                        }) {
+                            Text(text = "삭제")
+                        }
+                    }
+                }
+
+                true -> {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        var newText by remember { mutableStateOf(toDoData.text) }
+
+                        OutlinedTextField(
+                            value = newText,
+                            onValueChange = {
+                                newText = it
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black)
+                        )
+                        Spacer(modifier = Modifier.size(4.dp))
+                        Button(onClick = {
+                            onEdit(toDoData.key, newText)
+                            isEditing = false
+                        }) {
+                            Text(text = "완료")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ToDoPreview() {
+    ComposeStudyTheme {
+        ToDo(ToDoData(1, "nice", true))
+    }
+}
+
+data class ToDoData(
+    val key: Int,
+    val text: String,
+    val done: Boolean = false
+)
