@@ -4,18 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.composestudy.screen.DetailScreen
+import com.example.composestudy.screen.MainScreen
 import com.example.composestudy.ui.theme.ComposeStudyTheme
-import com.example.composestudy.viewmodel.GithubViewMode
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,9 +26,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeStudyTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    ReposScreen()
+                    TopLevel()
                 }
             }
         }
@@ -35,25 +37,54 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ReposScreen(viewModel: GithubViewMode = viewModel()) {
-    LazyColumn {
-        item {
-            Button(onClick = {
-                viewModel.getRepos()
-            }) {
-                Text("리포지토리 가져오기")
-            }
-        }
-        items(viewModel.repos) {
-            Text(it.name)
-        }
-    }
-}
+fun TopLevel(
+    navController: NavHostController = rememberNavController(),
+    modifier: Modifier = Modifier
+) {
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ComposeStudyTheme {
-        ReposScreen()
+    NavHost(
+        navController = navController,
+        "Home",
+        modifier = modifier
+    ) {
+        composable("Home") {
+            MainScreen(
+                onPokemonClick = {
+                    val pokemonId = it.substringAfter("pokemon/")
+                        .substringBefore("/")
+                        .toInt()
+                    navController.navigate("Detail/${pokemonId}")
+                }
+            )
+        }
+
+        // 단계 3: arguments 파라미터를 설정하자.
+        // ```
+        // navArgument("pokemenId") {
+        // type = NavType.IntType
+        // }
+        // ```
+        // 리스트로 전달해야 한다.
+        composable(
+            "Detail/{pokemonId}",
+            arguments = listOf(
+                navArgument("pokemonId") {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            // 단계 4: `pokemonId`를 `Int`값으로 가져오자. (`arguments?.getInt`를 이용)
+            val pokemonId = it.arguments?.getInt("pokemonId") as Int
+            DetailScreen(
+                pokemonId = pokemonId,
+                onUpButtonClick = {
+                    navController.navigate("Home") {
+                        popUpTo("Home") {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
     }
 }

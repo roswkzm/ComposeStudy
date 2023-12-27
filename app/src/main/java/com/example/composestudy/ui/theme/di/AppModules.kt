@@ -1,6 +1,6 @@
 package com.example.composestudy.ui.theme.di
 
-import com.example.composestudy.service.GithubService
+import com.example.composestudy.service.PokeAPI
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -17,20 +17,22 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class AppModules {
-
     @Singleton
     @Provides
     @Named("API_URI")
-    fun provideWebAPI(): String = "https://api.github.com/"
+    fun provideWebAPI(): String = "https://pokeapi.co/api/v2/"
 
     @Singleton
     @Provides
     fun provideGson(): Gson =
-        GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+        GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create()
 
     @Singleton
     @Provides
-    fun provideConverterFactory(gson: Gson): Converter.Factory = GsonConverterFactory.create(gson)
+    fun provideConverterFactory(
+        gson: Gson
+    ): Converter.Factory = GsonConverterFactory.create(gson)
 
     @Singleton
     @Provides
@@ -46,5 +48,5 @@ class AppModules {
     @Provides
     fun provideGithubService(
         retrofit: Retrofit
-    ): GithubService = retrofit.create(GithubService::class.java)
+    ): PokeAPI = retrofit.create(PokeAPI::class.java)
 }
