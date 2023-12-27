@@ -1,6 +1,10 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -83,4 +87,26 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.3.2")
 
     implementation("androidx.navigation:navigation-compose:2.5.3")
+
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // viewModelScope
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+}
+
+kapt {
+    correctErrorTypes = true
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        // vendor.set(JvmVendorSpec.ADOPTIUM)
+        // implementation.set(JvmImplementation.J9)
+    }
 }
